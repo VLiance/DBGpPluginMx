@@ -41,7 +41,7 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=D:\mtk\MTK_MISC\npp_unicode\plugins
+OutputDir=Z:\Share\
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
@@ -56,10 +56,6 @@ HostApplication=D:\mtk\MTK_MISC\npp_unicode\notepad++.exe
 Launcher=
 UseLauncher=0
 DebugCWD=
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=
 [Version Info]
 IncludeVerInfo=1
 AutoIncBuild=1
@@ -92,8 +88,9 @@ Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 Count=2
 Item0=$(DELPHI)\Lib\Debug;C:\PROGRA~1\Jedi\jcl\lib\d6\debug
 Item1=$(DELPHI)\Lib\Debug
-Item2=O:\_Install\Delphi6\Install\program files\Borland\Delphi6\Lib
 [HistoryLists\hlOutputDirectorry]
-Count=2
-Item0=D:\mtk\MTK_MISC\npp_unicode\plugins
-Item1=C:\Program Files\Notepad++\plugins
+Count=4
+Item0=Z:\Share\
+Item1=C:\
+Item2=D:\mtk\MTK_MISC\npp_unicode\plugins
+Item3=C:\Program Files\Notepad++\plugins

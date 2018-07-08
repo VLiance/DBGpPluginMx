@@ -361,7 +361,8 @@ begin
     end;
   end;
   // 4. final try to map to filenam if local connection
-  if (not self.remote_unix and (self.Init.server = '127.0.0.1')) then
+  //if (not self.remote_unix and (self.Init.server = '127.0.0.1')) then   //Mx- Annoying popup (self.remote_unix true?) - Bug when reconnect ??? TODO
+  if ((self.Init.server = '127.0.0.1')) then
   begin
     Result := 'file:///'+URLEncode(StringReplace(Local, '\', '/', [rfReplaceAll]));
     exit;
@@ -1303,3 +1304,4 @@ begin
 end;
 
 end.
+

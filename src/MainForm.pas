@@ -569,7 +569,13 @@ begin
     break;
   end;
 
+
+  
+
+  
+
   // @todo: create some helper functions in NppPlugin
+
   if (remove) then
     SendMessage(self.Npp.NppData.ScintillaMainHandle, SCI_MARKERDELETE, lineno-1, MARKER_BREAK)
   else
@@ -577,8 +583,12 @@ begin
 
   if (self.state in [dsStarting, dsBreak]) then
   begin
+    //ShowMessage('RemoveBr? '+IntToStr(lineno));
     if (remove) then
+
+
       self.sock.RemoveBreakpoint(bp)
+
     else
       self.sock.SetBreakpoint(filename,lineno);
     self.sock.GetBreakpoints;
@@ -586,6 +596,7 @@ begin
   else
   if (remove) then
   begin
+  //ShowMessage('RemoveBr '+IntToStr(lineno));
     self.DebugBreakpointsForm1.RemoveBreakpoint(bp);
   end
   else

@@ -115,12 +115,20 @@ uses
 
 //var   x:TToolbarIcons;
 
+
+// Check if the bit at ABitIndex position is 1 (true) or 0 (false)
+function IsBitSet(const AValueToCheck, ABitIndex: Integer): Boolean;
+begin
+  Result := AValueToCheck and (1 shl ABitIndex) <> 0;
+end;
+
 procedure TDbgpNppPlugin.BeNotified(sn: PSCNotification);
 var
   x:^TToolbarIcons;
   tr: TTextRange;
   s: string;
   i: integer;
+  j: integer;
 begin
   if (sn^.nmhdr.code = NPPN_READY) then
   begin
@@ -162,15 +170,43 @@ begin
     //SendMessage(self.NppData.ScintillaMainHandle, SCI_CALLTIPCANCEL, 0, 0);
   end;
 
-  //if (sn^.nmhdr.code = SCN_DOUBLECLICK) then ShowMessage('SCN_DOUBLECLICK');
-  if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then
+
+  //Mx+ Add bookmark redirect to CTRL-CLICK
+  if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then      //Click  only to toggle breakpoint
   begin
     if (Assigned(self.MainForm)) then
     begin
       self.GetFileLine(s,i);
       i := SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_LINEFROMPOSITION, sn.position, 0);
+
+      j := SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERGET, i,24);
+     //  ShowMessage('SCN_MARGINCLICK '+IntToStr(j));
+      if (IsBitSet(j, 24))  then
+         SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERDELETE, i, 24)  //Remove bookmark if already present
+      else
+         SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERADD, i, 24);  //Add bookmark and it will be removed with click
+
+    end;
+  end;
+
+ // if (sn^.nmhdr.code = SCN_DOUBLECLICK) then ShowMessage('SCN_DOUBLECLICK');
+ // if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then    //Ctrl+Click
+  if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and not (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then  //Mx+ 'Click  only' to toggle breakpoint
+  begin
+    if (Assigned(self.MainForm)) then
+    begin
+      self.GetFileLine(s,i);
+      i := SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_LINEFROMPOSITION, sn.position, 0);
+
+	  //Mx+ Remove Bookmark with default click button
+      SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERDELETE, i, 24);  //Remove bookmark if already present
+      SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERADD, i, 24);  //Add bookmark and it will be removed with click
+		
+      SendMessage(self.NppData.ScintillaMainHandle, SCI_MARKERDELETE, i, MARKER_BREAK);   //Always remove (IF bugged)
+      
       self.MainForm.ToggleBreakpoint(s,i+1);
       //ShowMessage('SCN_MARGINCLICK '+IntToStr(i));
+
     end;
   end;
 
@@ -698,3 +734,4 @@ begin
 end;
 
 end.
+

@@ -244,13 +244,22 @@ var
   i, j: integer;
 begin
   SetLength(tmp, Length(self.breakpoints));
+  
+  
+  //Mx+ Bug if multiple breakpoint with same id, use lineno & filename instead
+   // filename: string;
+   // lineno: integer;
+  
   j := 0;
   for i := 0 to Length(self.breakpoints)-1 do
   begin
-    if (bp.id = self.breakpoints[i].id) then continue;
+    //if (bp.id = self.breakpoints[i].id) then continue;
+	if (bp.lineno = self.breakpoints[i].lineno) and (bp.filename = self.breakpoints[i].filename)  then continue;
+	
     tmp[j] := self.breakpoints[i];
     inc(j);
   end;
+
   SetLength(tmp, j);
   self.SetBreakpoints(tmp);
 end;
