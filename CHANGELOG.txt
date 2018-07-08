@@ -1,0 +1,115 @@
+2012-08-25 v0.13 beta
+
+On demand fetching of lower levels of property tree. If you set max_depth to 1
+each new level will be fetched from the debugging engine.
+Using AutoScroll=false on forms so that ClientWidth/ClientHeight is used and
+forms look better on Windows 7.
+Upgraded to JVCL 3.45.
+And added fix for http://issuetracker.delphi-jedi.org/view.php?id=5023
+Checking to see if dbgp source temp file changed and not rewriting it.
+
+2010-08-12 v0.12 beta
+
+Added max_data to config dialog.
+Using NPPN_READY to initialize markers. WM_CREATE is not available in 5.7 anymore.
+Updated FuncArray, separators now have Func set to nil.
+Mapping logic tries to fall back to direct local mapping if nothing matches.
+Small update for NPPM_GETCURRENTWORD.
+
+2009-05-05 v0.11 beta
+
+A quick fix for markers as N++ masks them.
+Try to do numerical comparison for sorting keys in Context and other windows.
+
+2008-11-16 v0.10 beta
+
+Changed to UNICODE.
+Handling for multiple concurent debug sessions.
+More socket error handling.
+
+
+2008-07-30 v0.9 beta
+
+New configuration, local setup bypasses all mapping.
+Experimental breakpoint tracking.
+Added GetLongPathName, so that internal paths are aligned with notepad's paths.
+Added unescape routine for dbgp files (eval).
+Updated breakpoint edit form for better alignment with xdebug.
+Remove all breakpoints.
+Added copy to clipboard from context and inspect tree forms.
+Fixed a bug (or some change in NPP) with opening files (green arrow not shown).
+A readme section on testing.
+
+2008-04-20 v0.8 beta
+
+Added listen port config directive. No dialog interface for it, just edit config file.
+CTRL+Click on margin to add breakpoint.
+Notepad++ will now remember last position of the debug window.
+Fixed a problem with newer XDebug when stepping out of the script.
+Made variable trees (context, watch...) sortable.
+Also when a variable inside an array changes, the red change indicator is propagated back to the top.
+Added a stop button. Aborts script.
+Watch child now present at startup.
+
+2008-02-16 v0.7 beta fix
+
+Fixed a bug in configuration dialog.
+
+2008-02-08 v0.7 beta
+
+Added config option to not break at first line of code.
+A few code cleanups.
+Fixed a bug in the watch child.
+Unreleased windows path mapping problem.
+
+2007-11-25 v0.6 beta
+
+Added new config options.
+Confiuration changes take effect right away.
+NPPM_SHUTDOWN.
+New breakpoint icons.
+
+2007-10-12 v0.5 alpha fix
+
+Added WM_CLOSE processing that should fix the hanging after exit problem. (Waiting for NPP approval).
+
+2007-10-06 v0.5 alpha
+
+About form displays current version and build.
+Breakpoints display icons.
+One config variable was miss-named.
+Added menu items for all child windows.
+Experimental eval on mouse dwell.
+Moved plugin config file to where it's supposed to be. Most people will need to reenter their configuration.
+Fancy menu enabling and disabling.
+Now using file version.
+Implemented synced call for easier property getting (watches, mouse dwell).
+Small breakpoints bug.
+Reuse eval result form.
+Some window handling changes.
+"Run to" button. (Temporary breakpoints don't work as they should because of XDebug)
+Var child shows changes in data tree.
+Watch child.
+Few code cleanups, updated constants.
+
+2007-09-05 v0.4 alpha
+
+Fixed floating window problem.
+Added line breakpoint toggle.
+Fixed windows path map problem.
+
+2007-08-10 v0.3 alpha
+
+A few bug fixes.
+
+2007-08-06 v0.2 alpha
+
+Added handling for SOURCE command.
+Persistent breakpoints, and breakpoint child.
+Option to auto-get local or remote context.
+Optional DBGP: mapping.
+Protocol level support for dbgp proxy.
+
+2007-06-24 v0.1 alpha
+
+Initial release.
