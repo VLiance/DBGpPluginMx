@@ -89,6 +89,8 @@ begin
     exit;
   end;
 }
+
+
 end;
 
 procedure TNppForm.UnregisterForm();

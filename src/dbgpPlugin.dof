@@ -29,7 +29,7 @@ Y=0
 Z=1
 ShowHints=1
 ShowWarnings=1
-UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE
 [Linker]
 MapFile=0
 OutputObjs=0
@@ -41,7 +41,7 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=Z:\Share\
+OutputDir=Z:\Share\DBGpPluginMx\Bin
 UnitOutputDir=
 PackageDLLOutputDir=
 PackageDCPOutputDir=
@@ -82,15 +82,18 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 [HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+Count=2
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE
+Item1=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
 Count=2
 Item0=$(DELPHI)\Lib\Debug;C:\PROGRA~1\Jedi\jcl\lib\d6\debug
 Item1=$(DELPHI)\Lib\Debug
 [HistoryLists\hlOutputDirectorry]
-Count=4
-Item0=Z:\Share\
-Item1=C:\
-Item2=D:\mtk\MTK_MISC\npp_unicode\plugins
-Item3=C:\Program Files\Notepad++\plugins
+Count=6
+Item0=Z:\Share\DBGpPluginMx\Bin
+Item1=Z:\Share\DBGpPluginMx
+Item2=Z:\Share\
+Item3=C:\
+Item4=D:\mtk\MTK_MISC\npp_unicode\plugins
+Item5=C:\Program Files\Notepad++\plugins

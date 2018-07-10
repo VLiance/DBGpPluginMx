@@ -206,6 +206,8 @@ begin
 
   self.BitBtnClose.Caption := 'Turn ON';
   self.SetState(DbgpWinSocket.dsStopped);
+  
+
 end;
 
 procedure TNppDockingForm1.ServerSocket1Accept(Sender: TObject;

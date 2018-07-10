@@ -1,0 +1,18 @@
+DBGP Notepad++ plugin Mx Mod
+
+
+MX FEATURES
+
+-Adapted for CWC (C++ & C~ language)
+-Change CTRL-Click for Click to insert breakpoint and Click for CTRL-Click to insert Bookmark (inverse of original)
+-Always detect new connection if DBGpPlugin is not open
+
+BUGFIX
+
+-Can toggle visibility of the plugin
+-Remove breakpoint with ID cause multiple deletion, change to Lineno/Filename
+-Suppress of annoying message to map filename when reconnect
+
+
+THANKS TO
+- Original DBGpPlugin author: Damjan Cvetko <zobo@users.sf.net> (view README.txt)

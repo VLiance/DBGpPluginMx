@@ -35,8 +35,10 @@ type
   public
     { Public declarations }
     DlgId: Integer;
+	Status: Integer;
     procedure Show;
     procedure Hide;
+    procedure Toggle;
   published
     { Published declarations }
   end;
@@ -74,14 +76,29 @@ begin
  inherited;
 end;
 
+
+
+procedure TNppDockingForm.Toggle;
+begin
+	//ShowMessage('Status '+IntToStr(Status));
+	if(Status = 0) then
+		Show()
+	else
+		Hide();
+
+    inherited;
+end;
+
 procedure TNppDockingForm.Show;
 begin
+	Status := 1;
   SendMessage(self.Npp.NppData.NppHandle, NPPM_DMMSHOW, 0, LPARAM(self.Handle));
   inherited;
 end;
 
 procedure TNppDockingForm.Hide;
 begin
+	Status := 0;
   SendMessage(self.Npp.NppData.NppHandle, NPPM_DMMHIDE, 0, LPARAM(self.Handle));
   inherited;
 end;

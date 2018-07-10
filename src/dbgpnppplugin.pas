@@ -58,6 +58,7 @@ type
     procedure EnableFuncItem(i: integer);
     procedure InitMarkers;
   public
+
     //maps: TMaps;
     config: TDbgpNppPluginConfig;
     constructor Create;
@@ -130,12 +131,31 @@ var
   i: integer;
   j: integer;
 begin
+
   if (sn^.nmhdr.code = NPPN_READY) then
   begin
-    self.InitMarkers;
+ // ShowMessage('NPPN_READY');
+ self.InitMarkers;
+  
+  FuncDebugger();//Mx+
+  
+  
+ //self.ReadMaps(self.config.maps);
+  //self.ChangeMenu(dmsDisconnected);
+  //self.MainForm := TNppDockingForm1.Create(self);
+  //self.MainForm.DlgId := 0;
+  //self.RegisterDockingForm(TNppDockingForm(self.MainForm)); // move code to the docking class
+  //self.MainForm.ServerSocket1.Port := self.config.listen_port;
+  //if (not self.config.start_closed) then self.MainForm.BitBtnCloseClick(nil); // activate socket
+  
+  self.MainForm.Hide();
+
+			
+   
   end;
   if (sn^.nmhdr.code = SCN_DWELLSTART) then
   begin
+    ShowMessage('SCN_DWELLSTART');
     //if (Assigned(self.TestForm)) then self.TestForm.OnDwell();
     //ShowMessage('SCN_DWELLSTART '+IntToStr(sn^.position));
     //self.MainForm.state
@@ -373,7 +393,11 @@ begin
   self.FuncArray[i].ShortcutKey := nil;
   inc(i);
 
-  //self.ReadMaps(self.config.maps);
+
+ 
+	 
+	 
+	 
 end;
 
 
@@ -458,7 +482,8 @@ begin
   self.ChangeMenu(dmsDisconnected);
   if (Assigned(self.MainForm)) then
   begin
-    self.MainForm.Show;
+   // self.MainForm.Show; //Mx-
+	self.MainForm.Toggle(); //Mx+
     exit;
   end;
   self.MainForm := TNppDockingForm1.Create(self);
@@ -469,6 +494,9 @@ begin
   self.MainForm.Visible := true;
   self.MainForm.ServerSocket1.Port := self.config.listen_port;
   if (not self.config.start_closed) then self.MainForm.BitBtnCloseClick(nil); // activate socket
+  
+ 
+   
 end;
 
 procedure TDbgpNppPlugin.FuncAbout;
@@ -688,6 +716,8 @@ begin
 
   // reread config
   self.ReadMaps(self.config.maps);
+  
+ 
 end;
 
 // Test, za prikazovanje menujev
@@ -697,6 +727,8 @@ var
 begin
   hm := GetMenu(self.NppData.NppHandle);
   EnableMenuItem(hm, self.FuncArray[i].CmdID, MF_BYCOMMAND or MF_DISABLED or MF_GRAYED);
+  
+    
 end;
 
 procedure TDbgpNppPlugin.EnableFuncItem(i: integer);
@@ -705,6 +737,8 @@ var
 begin
   hm := GetMenu(self.NppData.NppHandle);
   EnableMenuItem(hm, self.FuncArray[i].CmdID, MF_BYCOMMAND or MF_ENABLED);
+
+   
 end;
 
 procedure TDbgpNppPlugin.ChangeMenu(state: TDbgpMenuState);
@@ -730,6 +764,7 @@ begin
     for i:=self.menuEvalIndex to self.menuEvalIndex+1 do self.EnableFuncItem(i);
     for i:=self.menuEvalIndex+3 to self.menuEvalIndex+7 do self.EnableFuncItem(i);
   end;
+  
 
 end;
 
