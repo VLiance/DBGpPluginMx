@@ -44,6 +44,7 @@ object DebugBreakpointsForm1: TDebugBreakpointsForm1
     TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toThemeAware, toUseBlendedImages]
     TreeOptions.SelectionOptions = [toFullRowSelect]
     TreeOptions.StringOptions = [toSaveCaptions]
+	OnDblClick = VirtualStringTree1DblClick
     OnGetText = VirtualStringTree1GetText
     OnGetImageIndex = VirtualStringTree1GetImageIndex
     Columns = <

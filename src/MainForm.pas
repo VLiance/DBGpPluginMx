@@ -89,6 +89,7 @@ type
     procedure BreakpointEdit(Sender: TComponent; bp: TBreakpoint);
     procedure BreakpointDelete(Sender: TComponent; bp: TBreakpoint);
     procedure StackSelect(Sender: TObject; filename: String; lineno: integer; Depth: integer);
+    procedure BreakpointSelect(Sender: TObject; filename: String; lineno: integer; Depth: integer);
 
     procedure WatchesOnChange(Sender: TObject; Watches: TPropertyItems);
 
@@ -98,6 +99,7 @@ type
     procedure SessionSelect(Index: Integer);
   public
     { Public declarations }
+	bConnected : Boolean;
     state: TDbgpState; // hmmm read only?
     sock: TDbgpWinSocket;
     DebugStackForm1: TDebugStackForm1;
@@ -204,10 +206,10 @@ begin
   self.Open(dctWatches,false);
   ManualTabDockAddPage(d, self.DebugWatchForm);
 
-  self.BitBtnClose.Caption := 'Turn ON';
+  //self.BitBtnClose.Caption := 'Turn ON';
   self.SetState(DbgpWinSocket.dsStopped);
   
-
+  BitBtnCloseClick(nil);//Ini Buttons //Mx+
 end;
 
 procedure TNppDockingForm1.ServerSocket1Accept(Sender: TObject;
@@ -593,6 +595,7 @@ begin
 
     else
       self.sock.SetBreakpoint(filename,lineno);
+	  
     self.sock.GetBreakpoints;
   end
   else
@@ -628,9 +631,24 @@ end;
 { ugasne debugger }
 procedure TNppDockingForm1.BitBtnCloseClick(Sender: TObject);
 begin
-  if (Assigned(self.sock)) then self.sock.Close;
-  if (self.ServerSocket1.Active) then self.BitBtnClose.Caption := 'Turn ON' else self.BitBtnClose.Caption := 'Turn OFF';
-  if (self.ServerSocket1.Active) then self.ServerSocket1.Close else self.ServerSocket1.Open;
+
+  if (Assigned(Sender) and Assigned(self.sock)) then self.sock.Close;
+  if (Assigned(Sender) and self.ServerSocket1.Active and bConnected) then self.ServerSocket1.Close else self.ServerSocket1.Open;
+  
+  if (self.ServerSocket1.Active and bConnected) then self.BitBtnClose.Caption := 'Turn OFF' else self.BitBtnClose.Caption := 'Turn ON';
+  if (self.ServerSocket1.Active and bConnected) then self.BitBtnBreakpoint.Enabled := true else self.BitBtnBreakpoint.Enabled := false; //Mx+
+  if (self.ServerSocket1.Active and bConnected) then self.BitBtnEval.Enabled := true else self.BitBtnEval.Enabled := false; //Mx+
+  if (self.ServerSocket1.Active and bConnected) then self.DebugBreakpointsForm1.Enabled := true else self.DebugBreakpointsForm1.Enabled := false; //Mx+
+ 
+ if (bConnected = False) then 
+   begin
+	self.BitBtnClose.Caption := 'OFF';
+	self.BitBtnClose.Enabled := False;
+  end
+  else
+  begin
+  	self.BitBtnClose.Enabled := True;
+  end;
 end;
 
 procedure TNppDockingForm1.BitBtnRawClick(Sender: TObject);
@@ -724,17 +742,38 @@ procedure TNppDockingForm1.BreakpointDelete(Sender: TComponent;
   bp: TBreakpoint);
 var
   s: string;
-  i: integer;
+  i,j,oldl: integer;
+  filename: string;
+  tmp: TStringList;
 begin
   // @todo: change view to file and back
-  self.Npp.GetFileLine(s,i);
-  if (bp.sci_handler>0) and (bp.filename=s) then
-    SendMessage(self.Npp.NppData.ScintillaMainHandle, SCI_MARKERDELETEHANDLE, bp.sci_handler, 0);
+  
+ // self.Npp.GetFileLine(s,i); 
+ // if (bp.sci_handler>0) and (bp.filename=s) then
+ //   SendMessage(self.Npp.NppData.ScintillaMainHandle, SCI_MARKERDELETEHANDLE, bp.sci_handler, 0); //Mx ... Handle not Work?
 
+
+  self.Npp.GetFileLine(filename,oldl);
+  tmp := TStringList.Create;
+  self.Npp.GetOpenFiles(tmp);
+  
+	//Remove breakpoint correction
+   j := tmp.IndexOf(bp.filename);
+   if (j <> -1) then //if file is opened
+   begin
+ 		//ShowMessage('Okay ' + bp.filename + ' ' + IntToStr(bp.lineno-1));
+		self.Npp.DoOpen(bp.filename);
+		SendMessage(self.Npp.NppData.ScintillaMainHandle, SCI_MARKERDELETE, bp.lineno-1, MARKER_BREAK); 
+		SendMessage(self.Npp.NppData.ScintillaMainHandle, SCI_MARKERDELETE, bp.lineno-1, MARKER_BREAK); //Mx+ Only work when sending 2 time ... wtf??
+	end;
+	tmp.Free;	
+	self.Npp.DoOpen(filename); //Return to Current file //Mx+
+	  
+	  
   if Assigned(self.sock) and (self.state <> dsStopped) then
   begin
     self.sock.RemoveBreakpoint(bp);
-    self.sock.GetBreakpoints;
+  //  self.sock.GetBreakpoints; //Mx- Unoptimized
   end;
 end;
 
@@ -746,6 +785,13 @@ begin
     self.sock.UpdateBreakpoint(bp);
     self.sock.GetBreakpoints;
   end;
+end;
+
+procedure TNppDockingForm1.BreakpointSelect(Sender: TObject; filename: String;
+  lineno: integer; Depth: Integer);
+begin
+//ShowMessage('Click: ' + filename + ' : ' + IntToStr(lineno));
+  self.GotoLine(filename, lineno);
 end;
 
 procedure TNppDockingForm1.StackSelect(Sender: TObject; filename: String;
@@ -792,6 +838,8 @@ begin
       self.DebugBreakpointsForm1.OnBreakpointAdd := self.BreakpointAdd;
       self.DebugBreakpointsForm1.OnBreakpointEdit := self.BreakpointEdit;
       self.DebugBreakpointsForm1.OnBreakpointDelete := self.BreakpointDelete;
+      self.DebugBreakpointsForm1.OnBreakpointSelect := self.BreakpointSelect;
+	  
       if (Show) then self.DebugBreakpointsForm1.Show;
     end;
   end;
@@ -851,9 +899,19 @@ begin
     SendMessage(self.Npp.NppData.ScintillaMainHandle, SCI_SETMOUSEDWELLTIME, SC_TIME_FOREVER,0);
     SendMessage(self.Npp.NppData.ScintillaMainHandle, SCI_CALLTIPCANCEL, 0, 0);
     self.SetState(dsStopped);
+	
+	 // if (Assigned(Sender) and self.ServerSocket1.Active) then self.ServerSocket1.Close else self.ServerSocket1.Open;
+	 // ShowMessage('Diconnected');
+  	bConnected := False;
+	 BitBtnCloseClick(nil);//Ini Buttons //Mx+
     exit;
   end;
+  
+  
+	bConnected := True;
   self.sock := Socket;
+
+  
   //self.Label1.Caption := 'Connected to '+self.sock.Init.server+' idekey: '+self.sock.Init.idekey+' file: '+self.sock.Init.filename;
   self.sock.maps := (self.Npp as TDbgpNppPlugin).config.maps;
   self.sock.use_source := (self.Npp as TDbgpNppPlugin).config.use_source;
@@ -865,6 +923,14 @@ begin
   self.sock.OnDbgpBreak := self.sockDbgpBreak;
   self.sock.OnDbgpBreakpoints := self.sockDbgpBreakpoints;
   self.SetState(self.sock.state);
+ // ShowMessage(self.sock.state);
+ 
+ 
+ 
+  //  ShowMessage('Connected to '+self.sock.Init.server+' idekey: '+self.sock.Init.idekey+' file: '+self.sock.Init.filename);
+  
+  
+  BitBtnCloseClick(nil);//Ini Buttons //Mx+
 end;
 
 procedure TNppDockingForm1.SessionAdd(Socket: TCustomWinSocket);
@@ -901,6 +967,9 @@ begin
   self.ComboBox1.ItemIndex := Index;
   self.ComboBox1.Hint := self.ComboBox1.Text;
   self.SetupSession(TDbgpWinSocket(self.ComboBox1.Items.Objects[Index]));
+  
+  //ShowMessage(TValueObject(ComboBox1.Items.Objects[ComboBox1.ItemIndex]).Value.AsString);
+  
   if (self.sock <> nil) then
   begin
     // get "State" back from server

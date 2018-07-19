@@ -24,10 +24,15 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, JvComponentBase, JvDockControlForm, VirtualTrees, DbgpWinSocket,
-  Menus, DebugBreakpointEditForm, NppDockingForm, ImgList;
-
+  Menus, DebugBreakpointEditForm, NppDockingForm, ImgList, SciSupport;
+  
+const
+  MARKER_ARROW = 3;
+  MARKER_BREAK = 4;
+  
 type
   TBreakpointEditCB = procedure(Sender: TComponent; bp: TBreakpoint) of Object;
+  TBreakpointSelectCB = procedure(Sender: TObject; filename: String; lineno: integer; Depth: Integer) of Object;
   TDebugBreakpointsForm1 = class(TNppDockingForm)
     VirtualStringTree1: TVirtualStringTree;
     JvDockClient1: TJvDockClient;
@@ -40,6 +45,7 @@ type
     procedure Addbreakpoint1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Editbreakpoint1Click(Sender: TObject);
+	procedure VirtualStringTree1DblClick(Sender: TObject);
     procedure VirtualStringTree1GetText(Sender: TBaseVirtualTree;
       Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
       var CellText: WideString);
@@ -54,6 +60,7 @@ type
     FOnBreakpointAdd: TBreakpointEditCB;
     FOnBreakpointEdit: TBreakpointEditCB;
     FOnBreakpointDelete: TBreakpointEditCB;
+	FOnBreakpointSelect: TBreakpointSelectCB;
   public
     { Public declarations }
     breakpoints: TBreakpoints;
@@ -64,6 +71,7 @@ type
     property OnBreakpointAdd: TBreakpointEditCB read FOnBreakpointAdd write FOnBreakpointAdd;
     property OnBreakpointEdit: TBreakpointEditCB read FOnBreakpointEdit write FOnBreakpointEdit;
     property OnBreakpointDelete: TBreakpointEditCB read FOnBreakpointDelete write FOnBreakpointDelete;
+	property OnBreakpointSelect: TBreakpointSelectCB read FOnBreakpointSelect write FOnBreakpointSelect;
   end;
 
 var
@@ -274,7 +282,26 @@ begin
     bp2 := self.breakpoints[0];
     self.RemoveBreakpoint(self.breakpoints[0]);
     if (Assigned(self.FOnBreakpointDelete)) then self.FOnBreakpointDelete(self, bp2);
+	//SendMessage(self.Npp.NppData.ScintillaMainHandle, SCI_MARKERDELETEALL, MARKER_BREAK, 0); //Mx+ Be sure to remove all bkp
   end;
 end;
+
+
+procedure TDebugBreakpointsForm1.VirtualStringTree1DblClick(Sender: TObject); //Mx+ add dbl click breakpoint
+var
+  bp: PBreakpoint;
+begin
+//  self.VirtualStringTree1.se
+
+  if (self.VirtualStringTree1.FocusedNode = nil) then exit;
+  bp := self.VirtualStringTree1.GetNodeData(self.VirtualStringTree1.FocusedNode);
+//bp.filename
+    //self.GotoLine(filename, lineno);
+  //ShowMessage('Click');
+ // if (Assigned(self.FOnBreakpointSelect)) then self.FOnBreakpointSelect(self, si^.filename, si^.lineno, si^.level);
+ // if (Assigned(self.FOnBreakpointSelect)) then self.FOnBreakpointSelect(self, bp^.filename, bp^.lineno, 0);
+  if (Assigned(self.FOnBreakpointSelect)) then self.FOnBreakpointSelect(self, bp^.filename, bp^.lineno, 0);
+end;
+
 
 end.

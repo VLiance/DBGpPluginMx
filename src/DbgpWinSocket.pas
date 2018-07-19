@@ -323,7 +323,12 @@ begin
   // throw exception??
   r := self.UriToFile(Remote);
   Result := r;
-  if (r<>'') and (FileExists(r)) then exit;
+  if (r='') then //Mx+ accept empty loc file
+  begin
+	Result := '??';
+	exit;
+  end;
+  if (FileExists(r)) then exit;
   ShowMessage('Unable to map remote: '+Remote+' (ip: '+self.init.server+' idekey: '+self.init.idekey+') fallback to source');
   Result := self.MapSourceToLocal(Remote);
 end;

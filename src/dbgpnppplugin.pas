@@ -134,28 +134,15 @@ begin
 
   if (sn^.nmhdr.code = NPPN_READY) then
   begin
- // ShowMessage('NPPN_READY');
- self.InitMarkers;
-  
-  FuncDebugger();//Mx+
-  
-  
- //self.ReadMaps(self.config.maps);
-  //self.ChangeMenu(dmsDisconnected);
-  //self.MainForm := TNppDockingForm1.Create(self);
-  //self.MainForm.DlgId := 0;
-  //self.RegisterDockingForm(TNppDockingForm(self.MainForm)); // move code to the docking class
-  //self.MainForm.ServerSocket1.Port := self.config.listen_port;
-  //if (not self.config.start_closed) then self.MainForm.BitBtnCloseClick(nil); // activate socket
-  
-  self.MainForm.Hide();
-
-			
+	 // ShowMessage('NPPN_READY');
+	  self.InitMarkers;
+	  FuncDebugger();//Mx+
+	  self.MainForm.Hide();	
    
   end;
   if (sn^.nmhdr.code = SCN_DWELLSTART) then
   begin
-    ShowMessage('SCN_DWELLSTART');
+    //ShowMessage('SCN_DWELLSTART');
     //if (Assigned(self.TestForm)) then self.TestForm.OnDwell();
     //ShowMessage('SCN_DWELLSTART '+IntToStr(sn^.position));
     //self.MainForm.state
@@ -190,44 +177,44 @@ begin
     //SendMessage(self.NppData.ScintillaMainHandle, SCI_CALLTIPCANCEL, 0, 0);
   end;
 
-
-  //Mx+ Add bookmark redirect to CTRL-CLICK
-  if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then      //Click  only to toggle breakpoint
+  if (Assigned(self.MainForm) and Assigned(self.MainForm.ServerSocket1) and self.MainForm.ServerSocket1.Active) then 
   begin
-    if (Assigned(self.MainForm)) then
-    begin
-      self.GetFileLine(s,i);
-      i := SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_LINEFROMPOSITION, sn.position, 0);
+	  //Mx+ Add bookmark redirect to CTRL-CLICK
+	  if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then      //Click  only to toggle breakpoint
+	  begin
+	
+		  self.GetFileLine(s,i);
+		  i := SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_LINEFROMPOSITION, sn.position, 0);
 
-      j := SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERGET, i,24);
-     //  ShowMessage('SCN_MARGINCLICK '+IntToStr(j));
-      if (IsBitSet(j, 24))  then
-         SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERDELETE, i, 24)  //Remove bookmark if already present
-      else
-         SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERADD, i, 24);  //Add bookmark and it will be removed with click
+		  j := SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERGET, i,24);
+		 //  ShowMessage('SCN_MARGINCLICK '+IntToStr(j));
+		  if (IsBitSet(j, 24))  then
+			 SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERDELETE, i, 24)  //Remove bookmark if already present
+		  else
+			 SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERADD, i, 24);  //Add bookmark and it will be removed with click
 
-    end;
-  end;
+	
+	  end;
 
- // if (sn^.nmhdr.code = SCN_DOUBLECLICK) then ShowMessage('SCN_DOUBLECLICK');
- // if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then    //Ctrl+Click
-  if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and not (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then  //Mx+ 'Click  only' to toggle breakpoint
-  begin
-    if (Assigned(self.MainForm)) then
-    begin
-      self.GetFileLine(s,i);
-      i := SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_LINEFROMPOSITION, sn.position, 0);
+	 // if (sn^.nmhdr.code = SCN_DOUBLECLICK) then ShowMessage('SCN_DOUBLECLICK');
+	 // if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then    //Ctrl+Click
+	  if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and not (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then  //Mx+ 'Click  only' to toggle breakpoint
+	  begin
+	
+		  self.GetFileLine(s,i);
+		  i := SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_LINEFROMPOSITION, sn.position, 0);
 
-	  //Mx+ Remove Bookmark with default click button
-      SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERDELETE, i, 24);  //Remove bookmark if already present
-      SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERADD, i, 24);  //Add bookmark and it will be removed with click
-		
-      SendMessage(self.NppData.ScintillaMainHandle, SCI_MARKERDELETE, i, MARKER_BREAK);   //Always remove (IF bugged)
-      
-      self.MainForm.ToggleBreakpoint(s,i+1);
-      //ShowMessage('SCN_MARGINCLICK '+IntToStr(i));
+		  //Mx+ Remove Bookmark with default click button
+		  SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERDELETE, i, 24);  //Remove bookmark if already present
+		  SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERADD, i, 24);  //Add bookmark and it will be removed with click
+			
+		  SendMessage(self.NppData.ScintillaMainHandle, SCI_MARKERDELETE, i, MARKER_BREAK);   //Always remove (IF bugged)
+		  
+		  self.MainForm.ToggleBreakpoint(s,i+1);
+		  //ShowMessage('SCN_MARGINCLICK '+IntToStr(i));
 
-    end;
+	
+	  end;
   end;
 
   if (sn^.nmhdr.code = SCN_MODIFIED) and (sn^.modificationType and SC_MOD_CHANGEMARKER = SC_MOD_CHANGEMARKER) then
