@@ -9,6 +9,7 @@ MX FEATURES
 
 BUGFIX
 
+-Add com timeout
 -Can toggle visibility of the plugin
 -Remove breakpoint with ID cause multiple deletion, change to Lineno/Filename
 -Suppress of annoying message to map filename when reconnect

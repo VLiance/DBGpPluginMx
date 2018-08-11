@@ -550,6 +550,7 @@ var
   s: string;
   i: integer;
 begin
+
   self.Npp.GetFileLine(s,i);
   self.ToggleBreakpoint(s,i+1);
 end;
@@ -561,6 +562,9 @@ var
   bp: TBreakpoint;
   remove: boolean;
 begin
+
+ SendMessage(self.Npp.NppData.ScintillaMainHandle, SCI_MARKERDELETE, lineno-1, MARKER_BREAK);   //Mx+ Always remove (IF bugged)		  
+
   remove := false;
   for j := 0 to Length(self.DebugBreakpointsForm1.breakpoints)-1 do
   begin
@@ -573,10 +577,6 @@ begin
     break;
   end;
 
-
-  
-
-  
 
   // @todo: create some helper functions in NppPlugin
 
@@ -635,7 +635,8 @@ begin
   if (Assigned(Sender) and Assigned(self.sock)) then self.sock.Close;
   if (Assigned(Sender) and self.ServerSocket1.Active and bConnected) then self.ServerSocket1.Close else self.ServerSocket1.Open;
   
-  if (self.ServerSocket1.Active and bConnected) then self.BitBtnClose.Caption := 'Turn OFF' else self.BitBtnClose.Caption := 'Turn ON';
+  self.BitBtnClose.Visible := false; 
+  //if (self.ServerSocket1.Active and bConnected) then self.BitBtnClose.Caption := 'Turn OFF' else self.BitBtnClose.Caption := 'Turn ON';
   if (self.ServerSocket1.Active and bConnected) then self.BitBtnBreakpoint.Enabled := true else self.BitBtnBreakpoint.Enabled := false; //Mx+
   if (self.ServerSocket1.Active and bConnected) then self.BitBtnEval.Enabled := true else self.BitBtnEval.Enabled := false; //Mx+
   if (self.ServerSocket1.Active and bConnected) then self.DebugBreakpointsForm1.Enabled := true else self.DebugBreakpointsForm1.Enabled := false; //Mx+
@@ -734,7 +735,7 @@ begin
   if Assigned(self.sock) and (self.state <> dsStopped) then
   begin
     self.sock.SetBreakpoint(bp);
-    self.sock.GetBreakpoints;
+   // self.sock.GetBreakpoints; //Mx- optimise
   end;
 end;
 
@@ -888,6 +889,10 @@ end;
 
 procedure TNppDockingForm1.SetupSession(Socket: TDbgpWinSocket);
 begin
+	
+  self.sock := nil;//Mx+ Always remove breakpoint from precedant connection
+  self.DebugBreakpointsForm1.Removeallbreakpoints1Click(nil); //Mx+
+	
   if (Socket = nil) then
   begin
     //self.Label1.Caption := 'Disconnected...';
@@ -900,6 +905,8 @@ begin
     SendMessage(self.Npp.NppData.ScintillaMainHandle, SCI_CALLTIPCANCEL, 0, 0);
     self.SetState(dsStopped);
 	
+
+		
 	 // if (Assigned(Sender) and self.ServerSocket1.Active) then self.ServerSocket1.Close else self.ServerSocket1.Open;
 	 // ShowMessage('Diconnected');
   	bConnected := False;
@@ -938,7 +945,8 @@ var
   init: TInit;
 begin
   init := TDbgpWinSocket(Socket).Init;
-  self.ComboBox1.ItemIndex := self.ComboBox1.Items.AddObject(init.filename+' ('+init.server+' '+init.idekey+')', Socket);
+  //self.ComboBox1.ItemIndex := self.ComboBox1.Items.AddObject(init.filename+' ('+init.server+' '+init.idekey+')', Socket);
+  self.ComboBox1.ItemIndex := self.ComboBox1.Items.AddObject( init.idekey + ' ['+init.server+']'+ ' ' + init.filename, Socket);
   self.ComboBox1.Hint := self.ComboBox1.Text;
 end;
 

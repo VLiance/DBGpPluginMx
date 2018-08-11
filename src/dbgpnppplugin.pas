@@ -208,7 +208,7 @@ begin
 		  SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERDELETE, i, 24);  //Remove bookmark if already present
 		  SendMessage(self.NppData.ScintillaMainHandle, SciSupport.SCI_MARKERADD, i, 24);  //Add bookmark and it will be removed with click
 			
-		  SendMessage(self.NppData.ScintillaMainHandle, SCI_MARKERDELETE, i, MARKER_BREAK);   //Always remove (IF bugged)
+		//  SendMessage(self.NppData.ScintillaMainHandle, SCI_MARKERDELETE, i, MARKER_BREAK);   //Always remove (IF bugged)
 		  
 		  self.MainForm.ToggleBreakpoint(s,i+1);
 		  //ShowMessage('SCN_MARGINCLICK '+IntToStr(i));

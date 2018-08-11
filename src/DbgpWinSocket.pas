@@ -452,8 +452,17 @@ Data(404): <?xml version="1.0" encoding="iso-8859-1"?>
   self.FInit.idekey := self.xml.ChildNodes[1].Attributes['idekey'];
   self.FInit.server := self.xml.ChildNodes[1].Attributes['proxied'];
   if (self.FInit.server = '') then self.FInit.server := self.RemoteAddress;
-  self.FInit.filename := self.MapRemoteToLocal(self.xml.ChildNodes[1].Attributes['fileuri']);
-
+  //ShowMessage(self.xml.ChildNodes[1].Attributes['fileuri']);
+  if((self.xml.ChildNodes[1].Attributes['fileuri'] = 'dbgp:null') or (self.xml.ChildNodes[1].Attributes['fileuri'] = '')) then   //Mx+
+  begin
+	self.FInit.filename := '';
+  end
+  else
+  begin
+	self.FInit.filename := self.MapRemoteToLocal(self.xml.ChildNodes[1].Attributes['fileuri']);
+  end;
+		
+  
 {$IFDEF DBGP_COMPRESSION}
   // try to negotiate compression
   if (self.GetFeatureAsync('compression')) then
@@ -1170,7 +1179,10 @@ end;
 
 { Async call handling }
 function TDbgpWinSocket.WaitForAsyncAnswer(call_data: string): boolean;
+var
+   timeout:Integer;
 begin
+   timeout:= 0;
   Result := false;
   if (self.AsyncDbgpCall.TransID <> '') then exit;    // curenty only on async call at a time
 
@@ -1183,6 +1195,14 @@ begin
   begin
     Application.ProcessMessages;
     // check for timeout!
+	inc(timeout);
+	Sleep(1);
+	if timeout > 200 then  //200ms max
+	  begin
+		Result := false;
+		Break;
+	end;
+	
   end;
   self.AsyncDbgpCall.TransID := ''; // cleanup
   // humm

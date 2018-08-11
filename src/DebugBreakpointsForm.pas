@@ -209,7 +209,7 @@ begin
      end;
   2: begin
        case (bp^.breakpointtype) of
-       btLine: CellText := bp^.filename+':'+IntToStr(bp^.lineno);
+       btLine: CellText := extractfilename(bp^.filename)+':'+IntToStr(bp^.lineno); //Mx+ add extractfilename
        btCall: CellText := bp^.classname+'::'+bp^.functionname;
        btReturn: CellText := bp^.classname+'::'+bp^.functionname;
        btException: CellText := bp^.exception;
@@ -261,8 +261,8 @@ begin
   j := 0;
   for i := 0 to Length(self.breakpoints)-1 do
   begin
-    //if (bp.id = self.breakpoints[i].id) then continue;
-	if (bp.lineno = self.breakpoints[i].lineno) and (bp.filename = self.breakpoints[i].filename)  then continue;
+    if (bp.id = self.breakpoints[i].id) then continue;
+	//if (bp.lineno = self.breakpoints[i].lineno) and (bp.filename = self.breakpoints[i].filename)  then continue;
 	
     tmp[j] := self.breakpoints[i];
     inc(j);
