@@ -330,9 +330,9 @@ begin
 
   self.sock.GetBreakpoints;
   if (self.Npp as TDbgpNppPlugin).config.break_first_line then
-    self.DoResume(StepInto)
+    //self.DoResume(StepInto) ////mx? (debugger does not depend on npp) Todo Make a breakpoint? / remove option?
   else
-    self.DoResume(Run);
+    //self.DoResume(Run); //mx- (debugger does not depend on npp)
 end;
 
 procedure TNppDockingForm1.GotoLine(filename: string; Lineno: Integer);

@@ -9,6 +9,7 @@ MX FEATURES
 
 BUGFIX
 
+-Remove run/step on connect (debugger does not depend on npp)
 -Add com timeout
 -Can toggle visibility of the plugin
 -Remove breakpoint with ID cause multiple deletion, change to Lineno/Filename

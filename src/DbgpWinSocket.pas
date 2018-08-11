@@ -1196,8 +1196,8 @@ begin
     Application.ProcessMessages;
     // check for timeout!
 	inc(timeout);
-	Sleep(1);
-	if timeout > 200 then  //200ms max
+	Sleep(1); //mx+
+	if timeout > 200 then  //mx+, 200ms max
 	  begin
 		Result := false;
 		Break;
