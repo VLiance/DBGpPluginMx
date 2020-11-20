@@ -1215,6 +1215,7 @@ function TDbgpWinSocket.GetPropertyAsync(data: String): string;
 var
   list: TPropertyItems;
 begin
+ if (not self.Connected) then exit;
   Result := self.GetPropertyAsync(data, list);
   if (Result = '') then
   begin
@@ -1235,6 +1236,7 @@ function TDbgpWinSocket.GetPropertyAsync(data: String;
 var
   xml: IXMLDocument;
 begin
+  if (not self.Connected) then exit;
   self.SendCommand('property_get', '-n '+data);
   Result := 'Error...';
   SetLength(list, 1);

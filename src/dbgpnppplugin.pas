@@ -140,45 +140,48 @@ begin
 	  self.MainForm.Hide();	
    
   end;
-  if (sn^.nmhdr.code = SCN_DWELLSTART) then
+  
+
+  if (Assigned(self.MainForm) and Assigned(self.MainForm.sock) and Assigned(self.MainForm.ServerSocket1) and self.MainForm.ServerSocket1.Active) then 
   begin
-    //ShowMessage('SCN_DWELLSTART');
-    //if (Assigned(self.TestForm)) then self.TestForm.OnDwell();
-    //ShowMessage('SCN_DWELLSTART '+IntToStr(sn^.position));
-    //self.MainForm.state
+	  if (not self.MainForm.sock.Connected) then exit;//Mx+
+	  if (sn^.nmhdr.code = SCN_DWELLSTART) then
+	  begin
+		//ShowMessage('SCN_DWELLSTART');
+		//if (Assigned(self.TestForm)) then self.TestForm.OnDwell();
+		//ShowMessage('SCN_DWELLSTART '+IntToStr(sn^.position));
+		//self.MainForm.state
 
-    s := '';
-    SendMessage(self.NppData.ScintillaMainHandle, SCI_SETWORDCHARS, 0, LPARAM(PChar('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$->')));
-    tr.chrg.cpMin := SendMessage(self.NppData.ScintillaMainHandle, SCI_WORDSTARTPOSITION, sn^.position, 0);
-    SendMessage(self.NppData.ScintillaMainHandle, SCI_SETWORDCHARS, 0, LPARAM(PChar('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_')));
-    tr.chrg.cpMax := SendMessage(self.NppData.ScintillaMainHandle, SCI_WORDENDPOSITION, sn^.position, 0);
+		s := '';
+		SendMessage(self.NppData.ScintillaMainHandle, SCI_SETWORDCHARS, 0, LPARAM(PChar('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$->')));
+		tr.chrg.cpMin := SendMessage(self.NppData.ScintillaMainHandle, SCI_WORDSTARTPOSITION, sn^.position, 0);
+		SendMessage(self.NppData.ScintillaMainHandle, SCI_SETWORDCHARS, 0, LPARAM(PChar('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_')));
+		tr.chrg.cpMax := SendMessage(self.NppData.ScintillaMainHandle, SCI_WORDENDPOSITION, sn^.position, 0);
 
-    if (tr.chrg.cpMin<>-1) and (tr.chrg.cpMax-tr.chrg.cpMin>0) then
-    begin
-      SetLength(s, tr.chrg.cpMax-tr.chrg.cpMin+10);
-      tr.lpstrText := PChar(s);
-      SendMessage(Npp.NppData.ScintillaMainHandle, SCI_GETTEXTRANGE, 0, LPARAM(@tr));
-      SetString(s, Pchar(tr.lpstrText), StrLen(PChar(tr.lpstrText)));
-      SendMessage(self.NppData.ScintillaMainHandle, SCI_CALLTIPSHOW, sn^.position, LPARAM(PChar(s+' = Getting...')));
-      SendMessage(self.NppData.ScintillaMainHandle, SCI_SETCHARSDEFAULT, 0, 0);
-      if (s<>'') then
-      begin
-        s := self.MainForm.sock.GetPropertyAsync(s);
-        SendMessage(self.NppData.ScintillaMainHandle, SCI_CALLTIPSHOW, sn^.position, LPARAM(PChar(s)));
-      end;
-    end;
-    if (s = '') then
-        SendMessage(self.NppData.ScintillaMainHandle, SCI_CALLTIPCANCEL, 0, 0);
-  end;
+		if (tr.chrg.cpMin<>-1) and (tr.chrg.cpMax-tr.chrg.cpMin>0) then
+		begin
+		  SetLength(s, tr.chrg.cpMax-tr.chrg.cpMin+10);
+		  tr.lpstrText := PChar(s);
+		  SendMessage(Npp.NppData.ScintillaMainHandle, SCI_GETTEXTRANGE, 0, LPARAM(@tr));
+		  SetString(s, Pchar(tr.lpstrText), StrLen(PChar(tr.lpstrText)));
+		  SendMessage(self.NppData.ScintillaMainHandle, SCI_CALLTIPSHOW, sn^.position, LPARAM(PChar(s+' = Getting...')));
+		  SendMessage(self.NppData.ScintillaMainHandle, SCI_SETCHARSDEFAULT, 0, 0);
+		  if (s<>'') then
+		  begin
+			s := self.MainForm.sock.GetPropertyAsync(s);
+			SendMessage(self.NppData.ScintillaMainHandle, SCI_CALLTIPSHOW, sn^.position, LPARAM(PChar(s)));
+		  end;
+		end;
+		if (s = '') then
+			SendMessage(self.NppData.ScintillaMainHandle, SCI_CALLTIPCANCEL, 0, 0);
+	  end;
 
-  if (sn^.nmhdr.code = SCN_DWELLEND) then
-  begin
-    //add a delay somehow...
-    //SendMessage(self.NppData.ScintillaMainHandle, SCI_CALLTIPCANCEL, 0, 0);
-  end;
+	  if (sn^.nmhdr.code = SCN_DWELLEND) then
+	  begin
+		//add a delay somehow...
+		//SendMessage(self.NppData.ScintillaMainHandle, SCI_CALLTIPCANCEL, 0, 0);
+	  end;
 
-  if (Assigned(self.MainForm) and Assigned(self.MainForm.ServerSocket1) and self.MainForm.ServerSocket1.Active) then 
-  begin
 	  //Mx+ Add bookmark redirect to CTRL-CLICK
 	  if (sn^.nmhdr.code = SCN_MARGINCLICK) and (sn^.margin = 1) and (sn^.modifiers and SCMOD_CTRL = SCMOD_CTRL) then      //Click  only to toggle breakpoint
 	  begin
